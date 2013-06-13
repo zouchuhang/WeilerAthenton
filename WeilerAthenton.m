@@ -1,4 +1,4 @@
-WeilerAthenton
+function WeilerAthenton
 %% A demo of clipping of polygon by Weiler-Authenton algorithm
 % by Chuhang Zou % Yeguang Xue
 % 2013.6.13
@@ -130,6 +130,7 @@ NewWintab(:,nWin+1 )=Clipwintab(:,WinIN(ID));
    
 % Show the clipped window
 plot(FinalTab(1,:),FinalTab(2,:),'k-','LineWidth',2);
+end
 
  
 

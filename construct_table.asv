@@ -68,13 +68,10 @@ function [Polygontab2]= construct_table(inter,Polygon)
     Polygontab2 = Polygontab(:,1);
     index = 1;
     for i = 1:(nPolyVertex-1)
-        if i~=1 && Polygontab(1,i+1) == Polygontab(1,1) && Polygontab(2,i+1) == Polygontab(2,1) && Polygontab(3,i+1) == Polygontab(3,1)
-            index = index + 1;
-            Polygontab2(:,index) = Polygontab(:,i+1);
-            break;
-        end
+        if Polygontab(1,i+1) ==   
         if Polygontab(1,i) ~= Polygontab(1,i+1) || Polygontab(2,i) ~= Polygontab(2,i+1) || Polygontab(3,i) ~= Polygontab(3,i+1)
             index = index +1;
+        end
         end
            Polygontab2(:,index) = Polygontab(:,i+1);
     end
