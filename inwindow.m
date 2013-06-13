@@ -12,25 +12,17 @@ function [sign]= inwindow(p1,Clipwin)
 % Output:       sign: 1  - in point
 %                     -1 - out point
 %
+%进行一次编码
+minline = min(Clipwin');
+maxline = max(Clipwin');
+xmin = minline(1); %找到x最小的值；
+ymin = minline(2); %找到y最小的值；
+xmax = maxline(1); %找到x最大的值；
+ymax = maxline(2); %找到y最大的值；
 
-%initialization
-intercount = 0;
-sign = 1;
-
-% define the end point of the vertical line
-p2(1) = p1(1);
-p2(2) = -30;
-nClipVertex = size(Clipwin,2);
-
-% draw vertical line
-for  i = 1 : (nClipVertex-1)
-    [X Y flag]= intersectpoint( p1,p2,Clipwin(:,i),Clipwin(:,i+1));
-    if flag 
-        intercount = intercount + 1;
-    end
+if p1(1)<=xmax & p1(1)>=xmin & p1(2)<=ymax & p2(2)>=ymin  %表示点在焦点内（将边界上的点算作内部）
+    sign=1;
+else
+    sign=-1;
 end
-
- if (mod(intercount,2)==0)
-     sign = -1;
- end
 end
