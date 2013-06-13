@@ -78,5 +78,9 @@ function [Polygontab2]= construct_table(inter,Polygon)
         end
            Polygontab2(:,index) = Polygontab(:,i+1);
     end
+    nPolyVertex = size (Polygontab2,2);
+    if Polygontab2(1,2) == Polygontab2(1,nPolyVertex-1) && Polygontab2(2,2) == Polygontab2(2,nPolyVertex-1) && Polygontab2(3,2) == Polygontab2(3,nPolyVertex-1)
+        Polygontab2(:,nPolyVertex-1) = [];
+    end
             
 end
