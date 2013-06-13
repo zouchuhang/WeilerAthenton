@@ -20,7 +20,7 @@ ymin = minline(2); %找到y最小的值；
 xmax = maxline(1); %找到x最大的值；
 ymax = maxline(2); %找到y最大的值；
 
-if p1(1)<=xmax & p1(1)>=xmin & p1(2)<=ymax & p2(2)>=ymin  %表示点在焦点内（将边界上的点算作内部）
+if p1(1)<=xmax & p1(1)>=xmin & p1(2)<=ymax & p1(2)>=ymin  %表示点在焦点内（将边界上的点算作内部）
     sign=1;
 else
     sign=-1;
