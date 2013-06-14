@@ -2,7 +2,7 @@
 % 2013.6.11
 % revised from http://blog.sina.com.cn/s/blog_60b9b8890100t2b9.html
 
-function [X Y flag]= intersect( X1,Y1,X2,Y2 )
+function [X Y flag]= intersectpoint( X1,Y1,X2,Y2 )
 % Calculate the intersect between line X1Y1 and line X2Y2
 % determine whether the intersection is on the line by comparing the
 % value of the points
