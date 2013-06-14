@@ -1,10 +1,12 @@
 # WeilerAthenton
 
-CG Homework
+CG Homework: Improvement of WeilerAthenton Algorithm
 
 Group Member
 
-- Zou
+- Zouzou
 - Wenyuan
 - Changda
 - Guang
+
+
