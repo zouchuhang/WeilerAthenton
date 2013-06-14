@@ -1,6 +1,8 @@
 # WeilerAthenton
 
-CG Homework: Improvement of WeilerAthenton Algorithm
+CG Homework
+
+- Improvement of WeilerAthenton Algorithm
 
 Group Member
 
