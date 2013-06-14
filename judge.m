@@ -20,7 +20,7 @@ function [sign]= judge( p,Polygon,Clipwin,place)
 p1=Polygon(:,place);
 p2=Polygon(:,place+1);
 if p2(1) == p(1) && p2(2) == p(2)
-    [sign]  = inwindow(Polygon(:,place+2),Clipwin);
+    [sign]  = inwindow(Clipwin(:,place+2),Clipwin);
     if sign == -1
         return;
     end

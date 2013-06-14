@@ -11,7 +11,7 @@
 
 
 %% Initializing
-
+clc,clear
 % Screen definition
 width=10;
 height=10;
@@ -66,24 +66,31 @@ encode = [encode,encode2];
 %% Find intersaction
 interindex = 1;
 inter = [];
+
 for  i = 1 : (nPolyVertex-1)
     secnum = 0;
     intertemp = [];
-    flag = Judgeabondon( encode,numencode,i );
-    if flag==1 %经过编码后该边无法舍弃
+    abandonflag = judgeabandon( encode,numencode,i );
+    if abandonflag==1 % can't be abandoned
         for j = 1 : (nClipVertex-1)
-            % 这里添加，以在特定情况下免除下一条语句 (码这个已经码的快哭了。。接口有点不好弄。。就将就着吧。。)
-            % 可喜可贺的是求交点的算法我用的是最笨速度最慢的，对比起来会明显。
-            % ....
-            % calculate intersaction, save intersection points in inter[]
+            % calculate intersaction point
             [X, Y, flag] = intersectpoint(Polygon(:,i), Polygon(:,i+1), Clipwin(:,j), Clipwin(:,j+1));
+            
+            if (i==2 && j==3)
+                flag
+                pause
+            end            
+            
             % if have intersaction
             if  flag == 1 && secnum ~= 2
                 secnum = secnum + 1;
                 intertemp(1,secnum) = X;
                 intertemp(2,secnum) = Y;
-                % determine in-point and out-point
-                [intertemp(3,secnum)]= judge( intertemp(:,secnum),Polygon(:,i), Polygon(:,i+1),Clipwin,i);
+                % determine in-point and out-point               
+                
+                [intertemp(3,secnum)]= judge( intertemp(:,secnum), Polygon, Clipwin,i);
+                
+                
             end
             % intersection point no more than 2
             if secnum == 2;
@@ -91,6 +98,7 @@ for  i = 1 : (nPolyVertex-1)
             end
         end
     end
+        
     % modify the placement of intersection to be clock-wise
     if size(intertemp,2)==1;
         inter(:,interindex) = intertemp(:,1);
@@ -112,6 +120,8 @@ for  i = 1 : (nPolyVertex-1)
         end
     end
 end
+
+inter
 %% Build Tables
 
 % if no interaction points, draw result and return
@@ -122,9 +132,9 @@ end
 
 % Step 3: save to tables && construct bi-link table
 % polygon's table
-[Polygontab] = construct_table(inter,Polygon);
+[Polygontab] = construct_table(inter,Polygon)
 % Clipping window's table
-[Clipwintab] = construct_table(inter,Clipwin);
+[Clipwintab] = construct_table(inter,Clipwin)
 
 % Adjust table
 PolyIN=find( Polygontab(3,:)==1 );

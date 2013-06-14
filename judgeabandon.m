@@ -1,4 +1,4 @@
-function [ flag ] = Judgeabondon( encode,numencode,i )
+function [ flag ] = judgeabandon( encode,numencode,i )
 %  此程序判断被裁剪的多边形的某条边是否
 % Input:        encode: 编码
 %               numencode: 编码次数

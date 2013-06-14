@@ -18,6 +18,8 @@ function [X Y flag]= intersectpoint( A1,B1,A2,B2 )
 flag = 0;
 X=Inf;
 Y=Inf;
+k1=Inf;
+k2=Inf;
 
 A1X=A1(1);
 A1Y=A1(2);
@@ -42,8 +44,7 @@ end
 % begin
 
 % Condition 1: parallel or coincidence
-
-if abs(L1(1)*L2(2)-L1(2)*L2(1)) <1e-10
+if L1(1)*L2(2)-L1(2)*L2(1) <1e-10
     flag=0;
     return;
 end
@@ -56,6 +57,7 @@ if A1X==B1X
     b2=A2Y-k2*A2X; 
     Y=k2*X+b2;
     flag = 1;
+    ''
 end
 
 if A2X==B2X
@@ -77,6 +79,10 @@ if A1X~=B1X && A2X~=B2X
 end
 
 % debug
+k1
+k2
+X
+Y
     
 % determine whether the intersection is on the line
 if flag
