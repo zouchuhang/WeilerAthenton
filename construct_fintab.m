@@ -13,7 +13,6 @@ function [FinalTab]= construct_fintab(Polygontab,Clipwintab,bilinktab)
 %               Polgontab: table of the vertex of the polygon
 %               bilinktab: linked table for the intersection in the two tab
 % Output:       FinalTab: final table of clipped polygon  
-%
 
    nPolytab = size (Polygontab,2);
    nCliptab = size (Clipwintab,2);
