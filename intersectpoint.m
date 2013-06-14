@@ -1,67 +1,83 @@
-%% by Chuhang Zou
-% 2013.6.11
-% revised from http://blog.sina.com.cn/s/blog_60b9b8890100t2b9.html
+%% by XUE YEGUAGN
 
-function [X Y flag]= intersectpoint( X1,Y1,X2,Y2 )
-% Calculate the intersect between line X1Y1 and line X2Y2
+function [X Y flag]= intersectpoint( A1,B1,A2,B2 )
+% Calculate the intersect between line A1-B1 and line A2-B2
 % determine whether the intersection is on the line by comparing the
 % value of the points
 % naive version 
 %
-% Input:        X1,Y1,X2,Y2: 4 points, each has two elements x,y
+% Input:        A1,B1,A2,B2: 4 points, each has two elements x,y
 % Output:       X: the intersect point's x coordinate
 %               Y: the intersect point's y coordinate
-%               flag: 1 if has intersection, 0 if no
+%               flag: 1 if has intersection (on 2 line segments), 0 if not
+% Error:		A1-B1,A2-B2 not a line, flag: -1 error
 %
-% exception condition:  1.  coincidence
-%                       2.  vertex of the polygon is on the
-%                       clipwindow¡ª¡ªjudge.mÀïÃæÅÐ¶Ï
 %
 
-%initialization
+% initialization
 flag = 0;
 X=Inf;
 Y=Inf;
-        
-if X1(1)==Y1(1) 
-    % exception condition:  1
-    if X2(1)==Y2(1)
-        flag = 0;
-        return;
-    end
-    X=X1(1);
-    k2=(Y2(2)-X2(2))/(Y2(1)-X2(1));
-    b2=X2(2)-k2*X2(1); 
+
+A1X=A1(1);
+A1Y=A1(2);
+A2X=A2(1);
+A2Y=A2(2);
+
+B1X=B1(1);
+B1Y=B1(2);
+B2X=B2(1);
+B2Y=B2(2);
+
+L1=B1-A1; % line vector
+L2=B2-A2;
+
+% ensure input is ok
+if ( ( (L1(1)==0) && (L1(2)==0) ) || ( ( (L1(1)==0) && (L1(2)==0) ) ) )
+    flag=-1;
+	'Error'
+    return;
+end
+% begin
+
+% Condition 1: parallel or coincidence
+if L1(1)*L2(2)-L1(2)*L2(1) <1e-10
+    flag=0;
+    return;
+end
+
+% Condition 2: intersect
+
+if A1X==B1X 
+    X=A1X;
+    k2=(B2Y-A2Y)/(B2X-A2X);
+    b2=A2Y-k2*A2X; 
     Y=k2*X+b2;
     flag = 1;
 end
-if X2(1)==Y2(1)
-    X=X2(1);
-    k1=(Y1(2)-X1(2))/(Y1(1)-X1(1));
-    b1=X1(2)-k1*X1(1);
+
+if A2X==B2X
+    X=A2X;
+    k1=(B1Y-A1Y)/(B1X-A1X);
+    b1=A1Y-k1*A1X;
     Y=k1*X+b1;
     flag = 1;
 end
-if X1(1)~=Y1(1) && X2(1)~=Y2(1)
-    k1=(Y1(2)-X1(2))/(Y1(1)-X1(1));
-    k2=(Y2(2)-X2(2))/(Y2(1)-X2(1));
-    b1=X1(2)-k1*X1(1);
-    b2=X2(2)-k2*X2(1);
-    % exception condition:  1
-    if k1==k2
-       flag = 0;
-       return;
-    else
+
+if A1X~=B1X && A2X~=B2X
+    k1=(B1Y-A1Y)/(B1X-A1X);
+    k2=(B2Y-A2Y)/(B2X-A2X);
+    b1=A1Y-k1*A1X;
+    b2=A2Y-k2*A2X;
     X=(b2-b1)/(k1-k2);
     Y=k1*X+b1;
     flag = 1;
-    end
 end
     
 % determine whether the intersection is on the line
 if flag
-    [flag1]= online(X,Y,X1,Y1);
-    [flag2]= online(X,Y,X2,Y2);
+    [flag1]= online(X,Y,A1,B1);
+    [flag2]= online(X,Y,A2,B2);
     if flag1 && flag2
         flag = 1;
     else 
