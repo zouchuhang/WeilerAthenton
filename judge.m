@@ -1,7 +1,7 @@
 %% by Chuhang Zou
 % 2013.6.11
 
-function [sign]= judge( p,p1,p2,Clipwin,place)
+function [sign]= judge( p,Polygon,Clipwin,place)
 % Judge whether the point is in-point or out-point
 % Move the intersection point clock-wise, if the moved point is in the
 % polygon, then in-point, othterwise out-point
@@ -17,8 +17,10 @@ function [sign]= judge( p,p1,p2,Clipwin,place)
 %
 
 %if p2 = p; vertex of the polygon is on the clipwindow
+p1=Polygon(:,place);
+p2=Polygon(:,place+1);
 if p2(1) == p(1) && p2(2) == p(2)
-    [sign]  = inwindow(Clipwin(:,place+2),Clipwin);
+    [sign]  = inwindow(Polygon(:,place+2),Clipwin);
     if sign == -1
         return;
     end
