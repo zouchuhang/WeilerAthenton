@@ -1,6 +1,7 @@
 %% A demo of clipping of polygon by Weiler-Authenton algorithm
 
-% by Chuhang Zou % Yeguang Xue
+% Author: Chuhang Zou 
+% Yeguang Xue
 % 2013.6.13
 % naive version - could be speeded up
 %

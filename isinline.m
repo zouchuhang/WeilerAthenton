@@ -32,7 +32,7 @@ if A(2)==B(2)
 end
 
 % general case
-if (X-A(1))/(B(1)-A(1))==(Y-A(2))/(B(2)-A(2))
+if (X-A(1))/(B(1)-A(1))-(Y-A(2))/(B(2)-A(2))<1e-10
     flag=1;
     return;
 end
