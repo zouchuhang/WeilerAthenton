@@ -8,7 +8,9 @@
 %
 % In the figure: blue - clipping window, red - polygon, black - result
 
-% Constants
+
+%% Initializing
+
 % Screen definition
 width=10;
 height=10;
@@ -38,9 +40,10 @@ nClipVertex = size(Clipwin,2);  %裁剪多边形的顶点个数+1
 
 %% Preprocessing
 
-numencode = 2;%可以更改编码的次数:一次编码numencode=1;二次编码numencode=2;随机编码numencode为随机编码的次数;
-encode = [];
+% times of coding
+numencode = 2;
 
+encode = [];
 
 %进行一次编码
 [ encode1 ] = Encodefunction( Polygon,Clipwin,nPolyVertex,nClipVertex );
@@ -58,8 +61,8 @@ encode = [encode,encode2];
 %     [ encodek ] = Encodefunction( newPolygon,newClipwin,nPolyVertex,nClipVertex );
 %     encode = [encode,encodek];
 % end
-%%
-% Step 2: find intersaction
+
+%% Find intersaction
 interindex = 1;
 inter = [];
 for  i = 1 : (nPolyVertex-1)
@@ -108,7 +111,7 @@ for  i = 1 : (nPolyVertex-1)
         end
     end
 end
-%%
+%% Build Tables
 
 % if no interaction points, draw result and return
 if size(inter,2) == 0
