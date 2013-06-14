@@ -1,4 +1,4 @@
-% WeilerAthenton
+function WeilerAthenton
 %% A demo of clipping of polygon by Weiler-Authenton algorithm
 % by Chuhang Zou % Yeguang Xue
 % 2013.6.13
@@ -20,88 +20,73 @@ axis([-3*width 3*width -3*height 3*height])
 
 % Step 1: read in liner link table
   % main polygon, points listed in clock-wise in .txt file
-    fid=fopen('poly.txt','r');
-    Polygon = fscanf(fid,'%f%f',[2 inf]);
-    fclose(fid);
+%     fid=fopen('poly.txt','r');
+%     Polygon = fscanf(fid,'%f%f',[2 inf]);
+%   Polygon = [-30,0,20,-30;-20,0,-20,-20]
+    Polygon=[-20,0,20,9,-20;-20,0,-8,-25,-20];
+%     fclose(fid);
     plot(Polygon(1,:),Polygon(2,:),'r-','LineWidth',2);
   % clipping window, points listed in clock-wise in .txt file
-  % ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¹ï¿½ï¿½
+  % ±ØĞëÊÇÍ¹µÄ
     fid=fopen('clipwin.txt','r');
     Clipwin = fscanf(fid,'%f%f',[2 inf]);
+%     Clipwin = [-10,-10,10,10,-10;-10,10,10,-10,-10];
     fclose(fid);
     plot(Clipwin(1,:),Clipwin(2,:),'b-','LineWidth',2);
 
     % If the polygon has been input correctly
     % ...write if have time.....
-    
-%% Ô¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½-ï¿½Ä½ï¿½ï¿½ã·¨Î»ï¿½ï¿½
-%è¿›è¡Œä¸€æ¬¡ç¼–ç 
-minline = min(Clipwin');
-maxline = max(Clipwin');
-xmin = minline(1); %æ‰¾åˆ°xæœ€å°çš„å€¼ï¼›
-ymin = minline(2); %æ‰¾åˆ°yæœ€å°çš„å€¼ï¼›
-xmax = maxline(1); %æ‰¾åˆ°xæœ€å¤§çš„å€¼ï¼›
-ymax = maxline(2); %æ‰¾åˆ°yæœ€å¤§çš„å€¼ï¼›
-nPolyVertex = size(Polygon,2);%è¢«è£å‰ªå¤šè¾¹å½¢çš„é¡¶ç‚¹ä¸ªæ•°+1ï¼›
-encode1 = [];
-for i = 1 : (nPolyVertex)
-    x = Polygon(1,i);
-    y = Polygon(2,i);
-    if x<=xmax & x>=xmin 
-        if y<=ymax & y>=ymin
-            encode1 = [encode1;0,0,0,0];
-        elseif y>ymax
-            encode1 = [encode1;1,0,0,0];
-        else
-            encode1 = [encode1;0,1,0,0];
-        end
-    elseif x>xmax
-            if y>=ymax
-                encode1 = [encode1;1,0,1,0];
-            elseif y<=ymin
-                encode1 = [encode1;0,1,1,0];
-            else
-                encode1 = [encode1;0,0,1,0];
-            end
-    else
-        if y>=ymax
-                encode1 = [encode1;1,0,0,1];
-            elseif y<=ymin
-                encode1 = [encode1;0,1,0,1];
-            else
-                encode1 = [encode1;0,0,0,1];
-        end
-    end
-end
-% Step 2: find intersaction
-nPolyVertex = size(Polygon,2);
-nClipVertex = size(Clipwin,2);
+nPolyVertex = size(Polygon,2);%±»²Ã¼ô¶à±ßĞÎµÄ¶¥µã¸öÊı+1£»
+nClipVertex = size(Clipwin,2);%²Ã¼ô¶à±ßĞÎµÄ¶¥µã¸öÊı+1£»    
+%% Ô¤´¦Àí²¿·Ö-¸Ä½øËã·¨Î»ÖÃ
+numencode = 2;%¿ÉÒÔ¸ü¸Ä±àÂëµÄ´ÎÊı:Ò»´Î±àÂënumencode=1;¶ş´Î±àÂënumencode=2;Ëæ»ú±àÂënumencodeÎªËæ»ú±àÂëµÄ´ÎÊı;
+encode = [];
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%½øĞĞÒ»´Î±àÂë
+ [ encode1 ] = Encodefunction( Polygon,Clipwin,nPolyVertex,nClipVertex );
+ encode=[encode,encode1];
+%½øĞĞ¶ş´Î±àÂë
+%Polygon=[-20,0,20,-20;-20,0,-10,-20];nPolyVertex=4;xmin=-10;ymin=-10;xmax=10;ymax=10;
+ [ newPolygon,newClipwin ] = Transfer( Polygon,Clipwin,nPolyVertex,nClipVertex,3 );
+ [ encode2 ] = Encodefunction( newPolygon,newClipwin,nPolyVertex,nClipVertex );
+ encode = [encode,encode2];
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% randomĞÎÊ½µÄ±àÂë
+% for k = 1 : numencode
+%     r = unidrnd(5);%Éú³É1-5µÄËæ»úÊı
+%     [ newPolygon,newClipwin ] = Transfer( Polygon,Clipwin,nPolyVertex,nClipVertex,r );
+%     [ encodek ] = Encodefunction( newPolygon,newClipwin,nPolyVertex,nClipVertex );
+%     encode = [encode,encodek];
+% end
+%%
+% Step 2: find intersaction 
 interindex = 1;
 inter = [];
 for  i = 1 : (nPolyVertex-1)
     secnum = 0;
     intertemp = [];
-    if i < nPolyVertex & (encode1(i,:)&encode1(i+1,:))==zeros(1,4) %ä¸€æ¬¡ç¼–ç åˆ¤æ–­
-    for j = 1 : (nClipVertex-1)
-        % ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½Ë¡ï¿½ï¿½ï¿½ï¿½Ó¿ï¿½ï¿½Ğµã²»ï¿½ï¿½Åªï¿½ï¿½ï¿½ï¿½ï¿½Í½ï¿½ï¿½ï¿½ï¿½Å°É¡ï¿½ï¿½ï¿½)
-        % ï¿½ï¿½Ï²ï¿½ÉºØµï¿½ï¿½ï¿½ï¿½ó½»µï¿½ï¿½ï¿½ï¿½ã·¨ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½î±¿ï¿½Ù¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¡ï¿½ 
-        % ....
-        % calculate intersaction, save intersection points in inter[]
-        [X, Y, flag] = intersectpoint(Polygon(:,i), Polygon(:,i+1), Clipwin(:,j), Clipwin(:,j+1));
-        % if have intersaction
-        if  flag == 1 && secnum ~= 2
-            secnum = secnum + 1;
-            intertemp(1,secnum) = X;
-            intertemp(2,secnum) = Y;
-            % determine in-point and out-point
-            [intertemp(3,secnum)]= judge( intertemp(:,secnum),Polygon(:,i), Polygon(:,i+1),Clipwin,i);      
-        end
-        % intersection point no more than 2
-        if secnum == 2;   
-            break;
-        end
+    flag = Judgeabondon( encode,numencode,i );
+    if flag==1 %¾­¹ı±àÂëºó¸Ã±ßÎŞ·¨ÉáÆú
+       for j = 1 : (nClipVertex-1)
+          % ÕâÀïÌí¼Ó£¬ÒÔÔÚÌØ¶¨Çé¿öÏÂÃâ³ıÏÂÒ»ÌõÓï¾ä (ÂëÕâ¸öÒÑ¾­ÂëµÄ¿ì¿ŞÁË¡£¡£½Ó¿ÚÓĞµã²»ºÃÅª¡£¡£¾Í½«¾Í×Å°É¡£¡£)
+          % ¿ÉÏ²¿ÉºØµÄÊÇÇó½»µãµÄËã·¨ÎÒÓÃµÄÊÇ×î±¿ËÙ¶È×îÂıµÄ£¬¶Ô±ÈÆğÀ´»áÃ÷ÏÔ¡£ 
+          % ....
+          % calculate intersaction, save intersection points in inter[]
+          [X, Y, flag] = intersect(Polygon(:,i), Polygon(:,i+1), Clipwin(:,j), Clipwin(:,j+1));
+          % if have intersaction
+            if  flag == 1 && secnum ~= 2
+              secnum = secnum + 1;
+              intertemp(1,secnum) = X;
+              intertemp(2,secnum) = Y;
+              % determine in-point and out-point
+              [intertemp(3,secnum)]= judge( intertemp(:,secnum),Polygon(:,i), Polygon(:,i+1),Clipwin,i);      
+            end
+          % intersection point no more than 2
+          if secnum == 2;   
+              break;
+          end
       end
-    end 
+    end
     % modify the placement of intersection to be clock-wise
     if size(intertemp,2)==1;
         inter(:,interindex) = intertemp(:,1); 
@@ -138,31 +123,25 @@ end
     [Clipwintab] = construct_table(inter,Clipwin);
     
   % Adjust table
-
-PolyIN=find( Polygontab(3,:)==1 );
-WinIN=find( Clipwintab(3,:)==1 );
-
-ID1=find( (Clipwintab(1,WinIN)==Polygontab(1,PolyIN(1)))  );
-ID2=find( (Clipwintab(2,WinIN)==Polygontab(2,PolyIN(1)))  );
-ID=intersect(ID1,ID2); 
-
-nPoly=size(Polygontab,2)-1;
-nWin=size(Clipwintab,2)-1;
-NewPolytab=zeros(size(Polygontab));
-NewWintab=zeros(size(Clipwintab));
-
-NewPolytab(:,1:(nPoly-PolyIN(1)+1) )=Polygontab(:,PolyIN(1):nPoly);
-NewPolytab(:,(nPoly-PolyIN(1)+2):nPoly )=Polygontab(:,1:PolyIN(1)-1);
-NewPolytab(:,nPoly+1 )=Polygontab(:,PolyIN(1));
-
-NewWintab(:,1:(nWin-WinIN(ID)+1) )=Clipwintab(:,WinIN(ID):nWin);
-NewWintab(:,(nWin-WinIN(ID)+2):nWin )=Clipwintab(:,1:WinIN(ID)-1);
-NewWintab(:,nWin+1 )=Clipwintab(:,WinIN(ID));
+  PolyIN=find( Polygontab(3,:)==1 );
+  WinIN=find( Clipwintab(3,:)==1 );
+  nPoly=size(Polygontab,2)-1;
+  nWin=size(Clipwintab,2)-1;  
+  NewPolytab=zeros(size(Polygontab));
+  NewWintab=zeros(size(Clipwintab));
+  
+  NewPolytab(:,1:(nPoly-PolyIN(1)+1) )=Polygontab(:,PolyIN(1):nPoly);
+  NewPolytab(:,(nPoly-PolyIN(1)+2):nPoly )=Polygontab(:,1:PolyIN(1)-1);
+  NewPolytab(:,nPoly+1 )=Polygontab(:,PolyIN(1));
+  
+  NewWintab(:,1:(nWin-WinIN(1)+1) )=Clipwintab(:,WinIN(1):nWin);
+  NewWintab(:,(nWin-WinIN(1)+2):nWin )=Clipwintab(:,1:WinIN(1)-1);
+  NewWintab(:,nWin+1 )=Clipwintab(:,WinIN(1));
     
    % bi-link table
      % first row: the place of intersection in Polygontab
      % second row: the place of intersection in Clipwintab
-     % third row: track record 1-tracked, 0-untracked ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ã´°ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½Ê±ï¿½ÃµÄ£ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½ï¿½ï¿½
+     % third row: track record 1-tracked, 0-untracked £¨ÊÇ·½±ã´°¿ÚÎª»·ĞÎÊ±ÓÃµÄ£¬ÔİÊ±ÕâĞĞÊÇÃ»ÓĞÒâÒåµÄ£¬¿ÉÒÔ²»Àí£©
      [bilinktab] = construct_link(NewPolytab,NewWintab);
     
  % Step 4: get the final clipped polygon in FinalTab
@@ -170,6 +149,7 @@ NewWintab(:,nWin+1 )=Clipwintab(:,WinIN(ID));
    
 % Show the clipped window
 plot(FinalTab(1,:),FinalTab(2,:),'k-','LineWidth',2);
+end
 
  
 

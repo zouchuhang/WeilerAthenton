@@ -12,15 +12,15 @@ function [sign]= inwindow(p1,Clipwin)
 % Output:       sign: 1  - in point
 %                     -1 - out point
 %
-%è¿›è¡Œä¸€æ¬¡ç¼–ç 
+%½øĞĞÒ»´Î±àÂë
 minline = min(Clipwin');
 maxline = max(Clipwin');
-xmin = minline(1); %æ‰¾åˆ°xæœ€å°çš„å€¼ï¼›
-ymin = minline(2); %æ‰¾åˆ°yæœ€å°çš„å€¼ï¼›
-xmax = maxline(1); %æ‰¾åˆ°xæœ€å¤§çš„å€¼ï¼›
-ymax = maxline(2); %æ‰¾åˆ°yæœ€å¤§çš„å€¼ï¼›
+xmin = minline(1); %ÕÒµ½x×îĞ¡µÄÖµ£»
+ymin = minline(2); %ÕÒµ½y×îĞ¡µÄÖµ£»
+xmax = maxline(1); %ÕÒµ½x×î´óµÄÖµ£»
+ymax = maxline(2); %ÕÒµ½y×î´óµÄÖµ£»
 
-if p1(1)<=xmax & p1(1)>=xmin & p1(2)<=ymax & p1(2)>=ymin  %è¡¨ç¤ºç‚¹åœ¨ç„¦ç‚¹å†…ï¼ˆå°†è¾¹ç•Œä¸Šçš„ç‚¹ç®—ä½œå†…éƒ¨ï¼‰
+if p1(1)<=xmax & p1(1)>=xmin & p1(2)<=ymax & p1(2)>=ymin  %±íÊ¾µãÔÚ½¹µãÄÚ£¨½«±ß½çÉÏµÄµãËã×÷ÄÚ²¿£©
     sign=1;
 else
     sign=-1;
