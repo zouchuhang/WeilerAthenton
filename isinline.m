@@ -15,24 +15,25 @@ function [flag]= isinline(X,Y,A,B)
 %
 flag = 0;
 
+
 % vertical line
 if A(1)==B(1)
-    if X==A(1)
+    if abs(X-A(1))<1e-10
         flag=1;
-        return;
     end
+    return;
 end
 
 % horizontal line
 if A(2)==B(2)
-    if Y==A(2)
+    if abs(Y-A(2))<1e-10
         flag=1;
-        return;
     end
+    return;
 end
 
 % general case
-if (X-A(1))/(B(1)-A(1))-(Y-A(2))/(B(2)-A(2))<1e-10
+if abs ( (X-A(1))/(B(1)-A(1))-(Y-A(2))/(B(2)-A(2)) ) <1e-10
     flag=1;
     return;
 end

@@ -1,4 +1,4 @@
-function [ encode ] = Encodefunction( Polygon,Clipwin,nPolyVertex,nClipVertex )
+function [ encode ] = encodefunction( Polygon,Clipwin,nPolyVertex,nClipVertex )
 %  此程序进行编码工作
 % Input:        Polygon: 需要裁减的多边形
 %               Clipwin: the clipping window

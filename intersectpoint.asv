@@ -1,96 +1,100 @@
 %% by XUE YEGUAGN
 
-function [X Y flag]= intersectpoint( A1,B1,A2,B2 )
-% Calculate the intersect between line A1-B1 and line A2-B2
+function [X Y flag]= intersectpoint( Poly1,Poly2,Clipwin1,Clipwin2 )
+% Calculate the intersect between line segments Poly1-Poly2 and Clipwin1-Clipwin2
 % determine whether the intersection is on the line by comparing the
 % value of the points
-% naive version 
+% naive version
 %
-% Input:        A1,B1,A2,B2: 4 points, each has two elements x,y
+% Input:        Poly1,Poly2,Clipwin1,Clipwin2: 4 points, each has two elements x,y
 % Output:       X: the intersect point's x coordinate
 %               Y: the intersect point's y coordinate
 %               flag: 1 if has intersection (on 2 line segments), 0 if not
-% Error:		A1-B1,A2-B2 not a line, flag: -1 error
+% Error:		Poly1-Poly2,Clipwin1-Clipwin2 not a line, flag: -1 error
 %
 %
-
+Poly1
+Poly2
 % initialization
 flag = 0;
 X=Inf;
 Y=Inf;
-k1=Inf;
-k2=Inf;
 
-A1X=A1(1);
-A1Y=A1(2);
-A2X=A2(1);
-A2Y=A2(2);
+Poly1X=Poly1(1);
+Poly1Y=Poly1(2);
+Clipwin1X=Clipwin1(1);
+Clipwin1Y=Clipwin1(2);
 
-B1X=B1(1);
-B1Y=B1(2);
-B2X=B2(1);
-B2Y=B2(2);
+Poly2X=Poly2(1);
+Poly2Y=Poly2(2);
+Clipwin2X=Clipwin2(1);
+Clipwin2Y=Clipwin2(2);
 
 % line vector
-L1=B1-A1;
-L2=B2-A2;
+L1=Poly2-Poly1;
+L2=Clipwin2-Clipwin1;
 
 % ensure input is ok
 if ( ( (L1(1)==0) && (L1(2)==0) ) || ( ( (L1(1)==0) && (L1(2)==0) ) ) )
     flag=-1;
-	'Error'
+    'Error'
     return;
 end
 % begin
 
 % Condition 1: parallel or coincidence
-if L1(1)*L2(2)-L1(2)*L2(1) <1e-10
-    flag=0;
-    return;
+
+if abs(L1(1)*L2(2)-L1(2)*L2(1)) <1e-10
+    if isinline(Poly1(1),Poly1(1),Clipwin1,Clipwin2 )
+        X=Clipwin2(1);
+        Y=Clipwin2(2);
+        flag=1;
+    else
+        flag=0;
+        return;
+    end
 end
 
 % Condition 2: intersect
 
-if A1X==B1X 
-    X=A1X;
-    k2=(B2Y-A2Y)/(B2X-A2X);
-    b2=A2Y-k2*A2X; 
+if Poly1X==Poly2X
+    X=Poly1X;
+    k2=(Clipwin2Y-Clipwin1Y)/(Clipwin2X-Clipwin1X);
+    b2=Clipwin1Y-k2*Clipwin1X;
     Y=k2*X+b2;
     flag = 1;
-    ''
 end
 
-if A2X==B2X
-    X=A2X;
-    k1=(B1Y-A1Y)/(B1X-A1X);
-    b1=A1Y-k1*A1X;
+if Clipwin1X==Clipwin2X
+    X=Clipwin1X;
+    k1=(Poly2Y-Poly1Y)/(Poly2X-Poly1X);
+    b1=Poly1Y-k1*Poly1X;
     Y=k1*X+b1;
     flag = 1;
 end
 
-if A1X~=B1X && A2X~=B2X
-    k1=(B1Y-A1Y)/(B1X-A1X);
-    k2=(B2Y-A2Y)/(B2X-A2X);
-    b1=A1Y-k1*A1X;
-    b2=A2Y-k2*A2X;
+if Poly1X~=Poly2X && Clipwin1X~=Clipwin2X
+    k1=(Poly2Y-Poly1Y)/(Poly2X-Poly1X);
+    k2=(Clipwin2Y-Clipwin1Y)/(Clipwin2X-Clipwin1X);
+    b1=Poly1Y-k1*Poly1X;
+    b2=Clipwin1Y-k2*Clipwin1X;
     X=(b2-b1)/(k1-k2);
-    Y=k1*X+b1;
+    Y=k1*X+Poly2;
     flag = 1;
 end
 
 % debug
-k1
-k2
-X
-Y
-    
+'debug'
+Poly1
+Poly2
+
 % determine whether the intersection is on the line
 if flag
-    [flag1]= online(X,Y,A1,B1);
-    [flag2]= online(X,Y,A2,B2);
+    [flag1]= online(X,Y,Poly1,Poly2);
+    [flag2]= online(X,Y,Clipwin1,Clipwin2);
     if flag1 && flag2
         flag = 1;
-    else 
+    else
         flag = 0;
     end
 end

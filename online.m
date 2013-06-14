@@ -1,4 +1,4 @@
-%% by Yeguang Xue
+%% by Dage
 % 2013.6.12
 
 function [flag]= online(X,Y,P1,P2)
@@ -11,9 +11,11 @@ function [flag]= online(X,Y,P1,P2)
 %               P1: point
 %               P2: point
 % Output:       flag: 1  - on line segment
-%                     -1 - out of line segment
+%                     0  - out of line segment
 %
+
 flag = 0;
+
 if P1(1)>P2(1)
     if X>=P2(1)&&X<P1(1)
         flag=1;

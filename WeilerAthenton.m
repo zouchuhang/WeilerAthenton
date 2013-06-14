@@ -22,7 +22,7 @@ axis equal
 axis([-3*width 3*width -3*height 3*height])
 
 % main polygon, points listed in clock-wise in .txt file
-fid=fopen('poly.txt','r');
+fid=fopen('poly3.txt','r');
 Polygon = fscanf(fid,'%f%f',[2 inf]);
 fclose(fid);
 plot(Polygon(1,:),Polygon(2,:),'r-','LineWidth',2);
@@ -47,7 +47,7 @@ numencode = 2;
 encode = [];
 
 %进行一次编码
-[ encode1 ] = Encodefunction( Polygon,Clipwin,nPolyVertex,nClipVertex );
+[ encode1 ] = encodefunction( Polygon,Clipwin,nPolyVertex,nClipVertex );
 encode=[encode,encode1];
 
 %进行二次编码
@@ -68,55 +68,35 @@ interindex = 1;
 inter = [];
 
 for  i = 1 : (nPolyVertex-1)
-    secnum = 0;
-    intertemp = [];
-    abandonflag = judgeabandon( encode,numencode,i );
+    
+    intertemp = zeros(3,1);
+    %abandonflag = judgeabandon( encode,numencode,i );
+    abandonflag=1;
     if abandonflag==1 % can't be abandoned
         for j = 1 : (nClipVertex-1)
             % calculate intersaction point
-            [X, Y, flag] = intersectpoint(Polygon(:,i), Polygon(:,i+1), Clipwin(:,j), Clipwin(:,j+1));
-            
-            if (i==2 && j==3)
-                flag
-                pause
-            end            
-            
+            [X, Y, flag] = intersectpoint(Polygon(:,i), Polygon(:,i+1), Clipwin(:,j), Clipwin(:,j+1));   
+
             % if have intersaction
-            if  flag == 1 && secnum ~= 2
-                secnum = secnum + 1;
-                intertemp(1,secnum) = X;
-                intertemp(2,secnum) = Y;
-                % determine in-point and out-point               
+            if  flag == 1 
+                intertemp(1) = X;
+                intertemp(2) = Y;
                 
-                [intertemp(3,secnum)]= judge( intertemp(:,secnum), Polygon, Clipwin,i);
+                'debug-----------------'
+                [Polygon(:,i), Polygon(:,i+1), Clipwin(:,j), Clipwin(:,j+1)]
+                [i,j,X,Y,flag]
                 
+                % determine in-point and out-point
+                intertemp(3)= judgeinout ( intertemp(:,1), Polygon, Clipwin,i,j)
+                                
+                '-------------------end'
                 
+                if intertemp(3)==0
+                    continue
+                end
+                inter(:,interindex) = intertemp(:,1);
+                interindex = interindex +1;
             end
-            % intersection point no more than 2
-            if secnum == 2;
-                break;
-            end
-        end
-    end
-        
-    % modify the placement of intersection to be clock-wise
-    if size(intertemp,2)==1;
-        inter(:,interindex) = intertemp(:,1);
-        interindex = interindex +1;
-    end
-    if size(intertemp,2)==2;
-        d1 = (Polygon(1,i)-intertemp(1,1))^2+(Polygon(2,i)-intertemp(2,1))^2;
-        d2 = (Polygon(1,i)-intertemp(1,2))^2+(Polygon(2,i)-intertemp(2,2))^2;
-        if d1 > d2
-            inter(:,interindex) = intertemp(:,2);
-            interindex = interindex +1;
-            inter(:,interindex) = intertemp(:,1);
-            interindex = interindex +1;
-        else
-            inter(:,interindex) = intertemp(:,1);
-            interindex = interindex +1;
-            inter(:,interindex) = intertemp(:,2);
-            interindex = interindex +1;
         end
     end
 end
@@ -132,13 +112,21 @@ end
 
 % Step 3: save to tables && construct bi-link table
 % polygon's table
-[Polygontab] = construct_table(inter,Polygon)
+[Polygontab] = construct_table(inter,Polygon);
 % Clipping window's table
-[Clipwintab] = construct_table(inter,Clipwin)
+[Clipwintab] = construct_table(inter,Clipwin);
 
 % Adjust table
+Polygontab
+Clipwintab
+
 PolyIN=find( Polygontab(3,:)==1 );
 WinIN=find( Clipwintab(3,:)==1 );
+
+ID1=find( (Clipwintab(1,WinIN)==Polygontab(1,PolyIN(1)))  );
+ID2=find( (Clipwintab(2,WinIN)==Polygontab(2,PolyIN(1)))  );
+ID=intersect(ID1,ID2)
+
 nPoly=size(Polygontab,2)-1;
 nWin=size(Clipwintab,2)-1;
 NewPolytab=zeros(size(Polygontab));
@@ -148,9 +136,12 @@ NewPolytab(:,1:(nPoly-PolyIN(1)+1) )=Polygontab(:,PolyIN(1):nPoly);
 NewPolytab(:,(nPoly-PolyIN(1)+2):nPoly )=Polygontab(:,1:PolyIN(1)-1);
 NewPolytab(:,nPoly+1 )=Polygontab(:,PolyIN(1));
 
-NewWintab(:,1:(nWin-WinIN(1)+1) )=Clipwintab(:,WinIN(1):nWin);
-NewWintab(:,(nWin-WinIN(1)+2):nWin )=Clipwintab(:,1:WinIN(1)-1);
-NewWintab(:,nWin+1 )=Clipwintab(:,WinIN(1));
+NewWintab(:,1:(nWin-WinIN(ID)+1) )=Clipwintab(:,WinIN(ID):nWin);
+NewWintab(:,(nWin-WinIN(ID)+2):nWin )=Clipwintab(:,1:WinIN(ID)-1);
+NewWintab(:,nWin+1 )=Clipwintab(:,WinIN(ID));
+
+NewPolytab
+NewWintab
 
 % bi-link table
 % first row: the place of intersection in Polygontab
@@ -162,7 +153,7 @@ NewWintab(:,nWin+1 )=Clipwintab(:,WinIN(1));
 [FinalTab] = construct_fintab(NewPolytab,NewWintab,bilinktab);
 
 % Show the clipped window
-plot(FinalTab(1,:),FinalTab(2,:),'k-','LineWidth',2);
+plot(FinalTab(1,:),FinalTab(2,:),'k-','LineWidth',5);
 
 
 
