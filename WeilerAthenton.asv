@@ -22,7 +22,7 @@ axis equal
 axis([-3*width 3*width -3*height 3*height])
 
 % main polygon, points listed in clock-wise in .txt file
-fid=fopen('poly3.txt','r');
+fid=fopen('poly0.txt','r');
 Polygon = fscanf(fid,'%f%f',[2 inf]);
 fclose(fid);
 plot(Polygon(1,:),Polygon(2,:),'r-','LineWidth',2);
@@ -81,13 +81,13 @@ for  i = 1 : (nPolyVertex-1)
             if  flag == 1 
                 intertemp(1) = X;
                 intertemp(2) = Y;
-         
+                
                 'debug-----------------'
                 [Polygon(:,i), Polygon(:,i+1), Clipwin(:,j), Clipwin(:,j+1)];
                 [i,j,X,Y,flag];
                 
                 % determine in-point and out-point
-                intertemp(3)= judgeinout ( intertemp(:,1), Polygon, Clipwin,i,j);
+                intertemp(3)= judgeinout ( intertemp(:,1), Polygon, Clipwin,i,j)
                                 
                 '-------------------end'
                 
